@@ -9,8 +9,8 @@ copy it to catkin_ws/src
 
 execute:
 > cd ~/catkin_ws
-> catkin_make
-> source devel/setup.bash
+catkin_make
+source devel/setup.bash <
 
 if you want to change the code in this repository:
     create a new branch with a descriptive name.  This creates a copy of all the code of rob456_final_emerald-city for you to work with. 
