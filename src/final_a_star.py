@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # Lab 4 - A*
 # Problem 3/4 - Flood Fill
