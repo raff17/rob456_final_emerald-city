@@ -396,8 +396,8 @@ if __name__ == '__main__':
     y = next_points[1]
 
 
-    new_x = map(x, 0, 384, -10, 0)
-    new_y = map(y, 0, 384, -10, 0)
+    new_x = map(x, 0, 384, -10, 10)
+    new_y = map(y, 0, 384, -10, 10)
     print(new_x,new_y)
 
 
