@@ -9,11 +9,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import image as mpimg
 import random as r
-
-#import rospy
-#from geometry_msgs.msg import Pose
+import rospy
+from geometry_msgs.msg import Pose
 
 from Problem_2 import graphDataStructure
+from visualization_msgs.msg import Marker
+import rospy
 
 class Node:
 # Priority queue node class
@@ -206,6 +207,12 @@ class floodFill():
         self.dataStructure.threshold()
         self.dataStructure.nodes()
 
+        # set ups for rviz marking
+        self.marker_publisher = rospy.Publisher('/marker', Marker, queue_size=2)
+        self.marker_class = Marker()
+        # variable to store markers tuples
+        self.markers = 0
+
         self.x_star = []
         self.y_star = []
 
@@ -365,6 +372,10 @@ class floodFill():
         plt.scatter(self.y_star, self.x_star, color='blue', marker='.')
         plt.show()
 
+    def markers_to_rviz(self):
+        """exports markers to rviz after clearing existing markers"""
+        self.marker_class.action = Marker.DELETEALL
+        draw_points(self.markers, self.marker_publisher)
 
 
 
