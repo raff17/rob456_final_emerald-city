@@ -371,5 +371,7 @@ if __name__ == '__main__':
     fill = floodFill()
     #print(tuple([-3, -3]))
     #print(np.asarray(tuple([-3, -3])))
+    prev_location_x = -3
+    prev_location_y = -1
 
     fill.flood_fill_do(tuple([prev_location_x, prev_location_y]), tuple([-5.0, -2]))
