@@ -1,12 +1,16 @@
+#!/usr/bin/env python
+
 # Lab 4 - A*
 # Problem 3/4 - Flood Fill
 # Kyle, Cole, Oliver, Rafael
-# test writing
 
 # importing matplotlib modules, other files, etc.
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import image as mpimg
+
+#import rospy
+#from geometry_msgs.msg import Pose
 
 from Problem_2 import graphDataStructure
 
@@ -128,6 +132,9 @@ class floodFill():
         self.dataStructure.threshold()
         self.dataStructure.nodes()
 
+        self.x_star = []
+        self.y_star = []
+
     def set_up_structure(self):
         test = graphDataStructure()
         test.occupyBuild()
@@ -153,7 +160,7 @@ class floodFill():
 
         best_val = 0
         best_val_loc = 0
-
+        print('new test', self.previous_loc, start_array)
         while self.previous_loc != start_array:
             neighbors = fill.dataStructure.checkPixel(self.previous_loc)
             best_val = abs_image[neighbors[0][0]][neighbors[0][1]]
@@ -175,11 +182,22 @@ class floodFill():
             list_items.pop()
         return list_items
 
-    def flood_fill_do(self): #pixel_loc, end_pixel_loc
+    def odom_to_map(self, inp):
+        new_inp = (inp+10)*(384/20)
+        return new_inp
+
+    def flood_fill_do(self, pixel_loc_in, end_pixel_loc_in):
         # Create an matrix to track whether a pixel has been hit
         closed_array = np.zeros((384, 384), dtype=int)
-        pixel_loc = [120, 155]
-        end_pixel_loc = [120, 220]
+        pixel_loc2 = np.rint(self.odom_to_map(np.asarray(pixel_loc_in)))
+        pixel_loc = [0]*2
+        pixel_loc[0] = pixel_loc2[0].astype(int)
+        pixel_loc[1] = pixel_loc2[1].astype(int)
+        end_pixel_loc2 = np.rint(self.odom_to_map(np.asarray(end_pixel_loc_in)))
+        end_pixel_loc = [0]*2
+        end_pixel_loc[0] = end_pixel_loc2[0].astype(int)
+        end_pixel_loc[1] = end_pixel_loc2[1].astype(int)
+
         # Close the pixel we have already seen
         closed_array[pixel_loc[0]][pixel_loc[1]] = 1
 
@@ -205,12 +223,10 @@ class floodFill():
                 if closed_array[int(neighbors[i][0])][int(neighbors[i][1])] < 1:
                     dist = queue_val[0][2] + np.sqrt(
                         (neighbors[i][0] - queue_val[0][0]) ** 2 + (neighbors[i][1] - queue_val[0][1]) ** 2)
-                    term1 = (neighbors[i][0] - queue_val[0][0]) ** 2
-                    term2 = (neighbors[i][1] - queue_val[0][1]) ** 2
-                    dist
+
                     # Add neighbor to queue with 1 less priority
                     self.add_to_queue([neighbors[i][0], neighbors[i][1]], -dist, dist)
-                    test = self.priQueue.show()
+
                     # Close that one
                     closed_array[int(neighbors[i][0])][int(neighbors[i][1])] = 1
 
@@ -221,6 +237,7 @@ class floodFill():
         plt.imshow(np.absolute(updated_image))
 
         # Work backwards for path
+        print('test',end_pixel_loc, pixel_loc)
         mark_loc = self.work_backwards(abs_vals, end_pixel_loc, pixel_loc)
 
         # Get x and y values (note reversed from typical)
@@ -239,7 +256,7 @@ class floodFill():
         pix_val_up = np.array([])
         pix_val_down = np.array([])
 
-        def check_for_obstical(y, x, width, offset):
+        def check_for_obstical(y, x, width, offset, x_star, y_star):
             for j in range(width):
                 val_neg_y = np.append(pix_val_left, updated_image[x - j, y])  # looks in negative 'y' direction of .pgm
                 val_pos_y = np.append(pix_val_right,
@@ -248,16 +265,19 @@ class floodFill():
                                       updated_image[x, y + j])  # Looks for walls in the positive 'x' direction of .pgm
                 val_neg_x = np.append(pix_val_down,
                                       updated_image[x, y - j])  # Looks for walls in the negative 'x' direction of .pgm
-                print(width)
                 if val_neg_y == 0:
-                    plt.scatter(y, x + offset, color='blue', marker='')
+                    x_star.append(x + offset)
+                    y_star.append(y)
                 if val_pos_y == 0:
-                    plt.plot(y, x - offset, color='blue', marker='')
+                    x_star.append(x - offset)
+                    y_star.append(y)
                 if val_pos_x == 0:
-                    plt.scatter(y - offset, x, color='blue', marker='')
+                    x_star.append(x)
+                    y_star.append(y - offset)
                 if val_neg_x == 0:
-                    plt.scatter(y + offset, x, color='blue', marker='')
-
+                    x_star.append(x)
+                    y_star.append(y + offset)
+            return x_star, y_star
 
         for i in path_length:
             count += 1
@@ -265,9 +285,25 @@ class floodFill():
             if pix_dist >= pix_expand:
                 plt.scatter(y_vals[i], x_vals[i], color='black', marker='.')
                 prev_count = count
-                check_for_obstical(y_vals[i], x_vals[i], width, offset)
+                self.x_star, self.y_star = check_for_obstical(y_vals[i], x_vals[i], width, offset, self.x_star, self.y_star)
+        plt.scatter(self.y_star, self.x_star, color='blue', marker='.')
         plt.show()
 
+# def map_odom_xy(data):
+#     pose = Pose()
+#     try:
+#         x = data.position.x
+# 	    y = data.position.y
+# 	    return (x,y)
+#     except AttributeError as e:
+# 	    rospy.logwarn(e)
+# 	return
 
-fill = floodFill()
-fill.flood_fill_do()
+# Run the class if main
+if __name__ == '__main__':
+    #rospy.init_node('map_odom_output_x_y')
+    #rospy.Subscriber('/map_odom', Pose, map_odom_xy)
+    fill = floodFill()
+    print(tuple([-3, -3]))
+    print(np.asarray(tuple([-3, -3])))
+    fill.flood_fill_do(tuple([-3.4, -3.4]), tuple([-3.7, -6.35]))
