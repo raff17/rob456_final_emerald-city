@@ -61,8 +61,16 @@ class graphDataStructure:
     def __init__(self):
         # Read Images
         # This imports the image
-        self.img = mpimg.imread('dufrenek.pgm')
+        self.img = mpimg.imread('TymoshuoMap.pgm')
         self.neighbor_pixels = []
+        self.border_x = []
+        self.border_y = []
+        self.pix_neg_y = np.array([])
+        self.pix_pos_y = np.array([])
+        self.pix_pos_x = np.array([])
+        self.pix_neg_x = np.array([])
+        print(self.find_next_point())
+
 
     def occupyBuild(self):
         # Create a matrix to store whether position is occupied or not
@@ -78,13 +86,17 @@ class graphDataStructure:
 
     def threshold(self):
         # This will output the threshold image
-        plt.imshow(self.isOccupied)
+        #plt.imshow(self.isOccupied)
         plt.savefig('part2.png', bbox_inches='tight')
+        plt.imshow(self.img)
         plt.show()
+
 
     def nodes(self):
         # This generates the node array and sets it to infinity
         self.nodes = np.full((len(self.img[0]), len(self.img[1])), np.inf)
+
+
 
     def checkPixel(self, pixel):
         # This returns an array of unoccupied points
@@ -120,6 +132,52 @@ class graphDataStructure:
             open_pixels.append([int(pixel[0] - 1), int(pixel[1])])
 
         return open_pixels
+
+######### find a new point to explore
+
+
+    def find_next_point(self):
+        pix_num = len(self.img)
+        for i in range(pix_num):
+            for j in range(pix_num):
+                if self.img[i,j] >= 250:
+                    val_neg_y = np.append(self.pix_neg_y,self.img[i - 1, j])            # looks in negative 'y' direction of .pgm
+                    val_pos_y = np.append(self.pix_pos_y,self.img[i + 1, j])            # Looks for walls in the positive 'y' direction of .pgm
+                    val_pos_x = np.append(self.pix_pos_x,self.img[i, j + 1])            # Looks for walls in the positive 'x' direction of .pgm
+                    val_neg_x = np.append(self.pix_neg_x,self.img[i, j - 1])            # Looks for walls in the negative 'x' direction of .pgm
+                    if val_neg_y == 205:
+                        self.border_x = np.append(self.border_x,j)
+                        self.border_y = np.append(self.border_y,i)
+
+                    if val_pos_y == 205:
+                        self.border_x = np.append(self.border_x, j)
+                        self.border_y = np.append(self.border_y, i)
+
+                    if val_neg_x == 205:
+                        self.border_x = np.append(self.border_x, j)
+                        self.border_y = np.append(self.border_y, i)
+
+                    if val_pos_x == 205:
+                        self.border_x = np.append(self.border_x, j)
+                        self.border_y = np.append(self.border_y, i)
+        plt.scatter(self.border_x, self.border_y, color='blue', marker='.')
+
+
+
+
+        return self.border_x,self.border_y
+        #return c
+
+
+
+
+
+
+################
+
+
+
+
 
 class floodFill():
     def __init__(self):
@@ -237,7 +295,7 @@ class floodFill():
         plt.imshow(np.absolute(updated_image))
 
         # Work backwards for path
-        print('test',end_pixel_loc, pixel_loc)
+        #print('test',end_pixel_loc, pixel_loc)
         mark_loc = self.work_backwards(abs_vals, end_pixel_loc, pixel_loc)
 
         # Get x and y values (note reversed from typical)
@@ -289,6 +347,13 @@ class floodFill():
         plt.scatter(self.y_star, self.x_star, color='blue', marker='.')
         plt.show()
 
+
+
+
+
+
+
+
 # def map_odom_xy(data):
 #     pose = Pose()
 #     try:
@@ -304,6 +369,7 @@ if __name__ == '__main__':
     #rospy.init_node('map_odom_output_x_y')
     #rospy.Subscriber('/map_odom', Pose, map_odom_xy)
     fill = floodFill()
-    print(tuple([-3, -3]))
-    print(np.asarray(tuple([-3, -3])))
-    fill.flood_fill_do(tuple([-3.4, -3.4]), tuple([-3.7, -6.35]))
+    #print(tuple([-3, -3]))
+    #print(np.asarray(tuple([-3, -3])))
+
+    fill.flood_fill_do(tuple([prev_location_x, prev_location_y]), tuple([-5.0, -2]))
