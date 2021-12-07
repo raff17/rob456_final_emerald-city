@@ -163,7 +163,7 @@ class graphDataStructure:
         plt.scatter(self.border_x, self.border_y, color='black', marker='.')  ### <------------ next spot
         rand_num = r.randrange(0, len(self.border_x))
         for i in range(len(self.border_x)):
-            if self.dataStructure.checkPixel([self.border_x[i], self.border_y[i]]) != 0:
+            if fill.dataStructure.checkPixel([self.border_x[i], self.border_y[i]]) != 0:
                 self.x_point_select = self.border_x[i]
                 self.y_point_select = self.border_y[i]
                 break
@@ -190,6 +190,7 @@ class graphDataStructure:
 
 class floodFill():
     def __init__(self):
+	print('test for final main')
         # Set up priority queue
         self.priQueue = PriorityQueue()
 
