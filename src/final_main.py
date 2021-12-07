@@ -22,7 +22,7 @@ class MainRun:
         x = self.next_point[0]
         y = self.next_point[1]
         diff_x = abs(x-self.robot_loc_x)
-        diff_y = abs(x - self.robot_loc_y)
+        diff_y = abs(y - self.robot_loc_y)
 
         if self.did_send == True:
             beg_time = rospy.get_rostime()     # at this point the robot should begin it's move.
