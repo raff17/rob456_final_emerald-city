@@ -42,7 +42,7 @@ def lidar_callback(scan_msg):
     maxScanLength = scan_msg.range_max
     distances = scan_msg.ranges
     numScans = len(distances)
-
+    print('min angle: ', minAngle,'max angle: ', maxAngle)
     print(ODOM)
 
     # Problem 1: move the robot toward the goal
@@ -89,6 +89,24 @@ def lidar_callback(scan_msg):
         # for each laser scan, the angle is currentLaserTheta, the index is i, and the distance is scan
         # Problem 2: avoid obstacles based on laser scan readings
         # TODO YOUR CODE HERE
+	
+
+	"""
+	# Kyle's new code
+	# Set the angle range we care about
+        angle = math.pi/12
+        angle2 = 2*math.pi-angle
+
+	if (currentLaserTheta<angle or currentLaserTheta>angle2) and distances[i] <=.5:
+            # Start go around procedure
+	    if (currentLaserTheta<angle):
+		# if we are looking at angles on the right side of the robot
+		# now we rotate to the left until the object is beyond an angle we care about
+	"""	
+
+
+
+
 
         # only take scans from in front of robot
         if right_ang_bound < currentLaserTheta < 0.6 or 5.65 < currentLaserTheta < left_ang_bound:
