@@ -30,7 +30,7 @@ class MainRun:
         print(self.next_point)
         current_time = rospy.get_rostime()
 
-        limit = 10
+        limit = 1   ##<---------------------------------- Says how far off the bot can be from the end point and still be considered at the endpoint
         x = map(self.next_point[0],0,384,-10,10)
         y = map(self.next_point[1],0,384,-10,10)
         diff_x = abs(x - self.robot_loc_x)
