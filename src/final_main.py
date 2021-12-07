@@ -38,7 +38,7 @@ class NewPoint:
                 print("robot didn't reach point")
                 beg_time = current_time
                 return self.next_point     # This should change based on the new explored map
-        else:
+        elif diff_x <= limit and diff_y <= limit:
             beg_time = current_time
             return self.next_point
 
