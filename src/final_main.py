@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+
 import final_a_star as a
 import rospy
-
+from geometry_msgs.msg import Pose
 
 class MainRun:
     def __init__(self):
@@ -9,14 +11,17 @@ class MainRun:
 	self.data_struc = a.graphDataStructure()
         #self.next_point = tuple(a.graphDataStructure().find_next_point(self.fill))
 	self.next_point = self.data_struc.find_next_point(self.fill)
-        self.robot_loc_x =  100 #odometry
-        self.robot_loc_y = 75  #odometry
+        self.robot_loc_x = 0
+        self.robot_loc_y = 0
         self.did_send = False #flag_from_ros
 	self.target_pub = rospy.Publisher('/Current_Target', String, queue_size=10)
+        self.pos_sub = rospy.Subscriber('/map_odom', Pose, self.current_pos_interpret)
 
 
     def main_run_func(self,time_limit,beg_time,current_time):
 	print(self.next_point)
+	self.robot_loc_x =  self.cur_loc
+        self.robot_loc_y = 75  #odometry
         current_time = rospy.get_rostime()
         limit = 10
         x = self.next_point[0]
@@ -47,6 +52,11 @@ class MainRun:
     def publish_target(self):
         #print("target published!")
         self.target_pub.publish(String(str(self.next_point)))
+
+    def current_pos_interpret(self, pos_msg):
+        self.robot_loc_x = pos_msg.position.x 
+	self.robot_loc_x = pos_msg.position.y
+	print(tuple(self.robot_loc_x, self.robot_loc_y))
 
 
 if __name__ == '__main__':
