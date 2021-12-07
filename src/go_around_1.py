@@ -12,9 +12,8 @@ from tf.transformations import euler_from_quaternion
 from geometry_msgs.msg import Twist
 
 # String command message
-from std_msgs.msg import string
+from std_msgs.msg import String
 
-GOAL = (1, 1)
 ODOM = None
 
 
@@ -182,7 +181,7 @@ if __name__ == "__main__":
     # subscribe to sensor messages
     lidar_sub = rospy.Subscriber('/scan', LaserScan, lidar_callback)
     odom_sub = rospy.Subscriber('/odom', Odometry, odom_callback)
-    wavepoint_sub = rospy.Subscriber('/wavepoint', string, target_callback)
+    waypoint_sub = rospy.Subscriber('/Current_Waypoint', string, target_callback)
     # publish twist message
     pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 

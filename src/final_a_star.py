@@ -61,7 +61,7 @@ class graphDataStructure:
     def __init__(self):
         # Read Images
         # This imports the image
-        self.img = mpimg.imread('dufrenek.pgm')
+        self.img = mpimg.imread('devMap.pgm')
         self.neighbor_pixels = []
         self.border_x = []
         self.border_y = []
@@ -169,7 +169,7 @@ class graphDataStructure:
         plt.scatter(self.border_x, self.border_y, color='black', marker='.')  ### <------------ next spot
         rand_num = r.randrange(0, len(self.border_x))
         for i in range(len(self.border_x)):
-            if fill.dataStructure.checkPixel([self.border_x[i], self.border_y[i]]) != 0:
+            if self.dataStructure.checkPixel([self.border_x[i], self.border_y[i]]) != 0:
                 self.x_point_select = self.border_x[i]
                 self.y_point_select = self.border_y[i]
                 break
@@ -241,7 +241,7 @@ class floodFill():
         best_val_loc = 0
         print('new test', self.previous_loc, start_array)
         while self.previous_loc != start_array:
-            neighbors = fill.dataStructure.checkPixel(self.previous_loc)
+            neighbors = self.dataStructure.checkPixel(self.previous_loc)
             best_val = abs_image[neighbors[0][0]][neighbors[0][1]]
             best_val_loc = 0
             for i in range(0,(len(neighbors))):
@@ -272,6 +272,7 @@ class floodFill():
         return inp_ret
 
     def flood_fill_do(self, pixel_loc_in, end_pixel_loc_in):
+	print(pixel_loc_in, end_pixel_loc_in)
         # Create a matrix to track whether a pixel has been hit
         closed_array = np.zeros((384, 384), dtype=int)
         pixel_loc2 = np.rint(self.odom_to_map(np.asarray(pixel_loc_in)))
@@ -293,7 +294,7 @@ class floodFill():
         self.add_to_queue(pixel_loc, 0, 0)
 
         # Loop while data is in the priority queue
-        while fill.priQueue.size() > 0:
+        while self.priQueue.size() > 0:
             # for the location array: queue_val[0], for priority: queue_val[1]
             queue_val = self.priQueue.show()
             # Get the matrix of valid neighboring pixels
