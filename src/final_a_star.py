@@ -9,12 +9,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import image as mpimg
 import random as r
-import rospy
-from geometry_msgs.msg import Pose
 
 from Problem_2 import graphDataStructure
-from visualization_msgs.msg import Marker
-import rospy
+#from visualization_msgs.msg import Marker
+#import rospy
 
 class Node:
 # Priority queue node class
@@ -208,8 +206,8 @@ class floodFill():
         self.dataStructure.nodes()
 
         # set ups for rviz marking
-        self.marker_publisher = rospy.Publisher('/marker', Marker, queue_size=2)
-        self.marker_class = Marker()
+   #     self.marker_publisher = rospy.Publisher('/marker', Marker, queue_size=2)
+   #     self.marker_class = Marker()
         # variable to store markers tuples
         self.markers = 0
 
@@ -266,6 +264,12 @@ class floodFill():
     def odom_to_map(self, inp):
         new_inp = (inp+10)*(384/20)
         return new_inp
+
+    def map_to_odom(self, inp):
+        #new_inp = [float(x) for x in inp]
+        #print(new_inp)
+        inp_ret = np.array(inp)*(20.0/384.0)-10.0
+        return inp_ret
 
     def flood_fill_do(self, pixel_loc_in, end_pixel_loc_in):
         # Create a matrix to track whether a pixel has been hit
@@ -362,15 +366,19 @@ class floodFill():
                     y_star.append(y + offset)
             return x_star, y_star
 
+        vals_out = []
         for i in path_length:
             count += 1
             pix_dist = count - prev_count
             if pix_dist >= pix_expand:
                 plt.scatter(y_vals[i], x_vals[i], color='black', marker='.')
+                vals_out.append(tuple(self.map_to_odom([y_vals[i], x_vals[i]])))
                 prev_count = count
                 self.x_star, self.y_star = check_for_obstical(y_vals[i], x_vals[i], width, offset, self.x_star, self.y_star)
         plt.scatter(self.y_star, self.x_star, color='blue', marker='.')
         plt.show()
+        return list(vals_out)
+
 
     def markers_to_rviz(self):
         """exports markers to rviz after clearing existing markers"""
@@ -412,8 +420,9 @@ if __name__ == '__main__':
 
     new_x = map(x, 0, 384, -10, 10)
     new_y = map(y, 0, 384, -10, 10)
-    print(new_x,new_y)
+    #print(new_x,new_y)
 
 
 
-    fill.flood_fill_do(tuple([-3.4, -3.4]), tuple([new_y, new_x]))
+    val_out = fill.flood_fill_do(tuple([-3.4, -3.4]), tuple([new_y, new_x]))
+    print('out',val_out)
