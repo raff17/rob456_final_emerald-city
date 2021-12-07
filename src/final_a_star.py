@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 
 # Lab 4 - A*
 # Problem 3/4 - Flood Fill
@@ -8,12 +8,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import image as mpimg
-from points_to_rviz import draw_points
-from visualization_msgs.msg import Marker
-import rospy
-#from geometry_msgs.msg import Pose
+import random as r
 
 from Problem_2 import graphDataStructure
+#from visualization_msgs.msg import Marker
+#import rospy
 
 class Node:
 # Priority queue node class
@@ -62,7 +61,7 @@ class graphDataStructure:
     def __init__(self):
         # Read Images
         # This imports the image
-        self.img = mpimg.imread('TymoshuoMap.pgm')
+        self.img = mpimg.imread('dufrenek.pgm')
         self.neighbor_pixels = []
         self.border_x = []
         self.border_y = []
@@ -70,7 +69,13 @@ class graphDataStructure:
         self.pix_pos_y = np.array([])
         self.pix_pos_x = np.array([])
         self.pix_neg_x = np.array([])
-        print(self.find_next_point())
+        self.x_point_select = []
+        self.y_point_select = [] #self.find_next_point()
+        self.isOccupied = []
+        #print(self.y_point_select)
+        #print(self.x_point_select)
+
+
 
 
     def occupyBuild(self):
@@ -137,7 +142,7 @@ class graphDataStructure:
 ######### find a new point to explore
 
 
-    def find_next_point(self):
+    def find_next_point(self, fill):
         pix_num = len(self.img)
         for i in range(pix_num):
             for j in range(pix_num):
@@ -161,13 +166,20 @@ class graphDataStructure:
                     if val_pos_x == 205:
                         self.border_x = np.append(self.border_x, j)
                         self.border_y = np.append(self.border_y, i)
-        plt.scatter(self.border_x, self.border_y, color='blue', marker='.')
+        plt.scatter(self.border_x, self.border_y, color='black', marker='.')  ### <------------ next spot
+        rand_num = r.randrange(0, len(self.border_x))
+        for i in range(len(self.border_x)):
+            if fill.dataStructure.checkPixel([self.border_x[i], self.border_y[i]]) != 0:
+                self.x_point_select = self.border_x[i]
+                self.y_point_select = self.border_y[i]
+                break
 
 
 
+        return self.x_point_select,self.y_point_select
 
-        return self.border_x,self.border_y
-        #return c
+
+
 
 
 
@@ -175,6 +187,8 @@ class graphDataStructure:
 
 
 ################
+
+
 
 
 
@@ -192,8 +206,8 @@ class floodFill():
         self.dataStructure.nodes()
 
         # set ups for rviz marking
-        self.marker_publisher = rospy.Publisher('/marker', Marker, queue_size=2)
-        self.marker_class = Marker()
+   #     self.marker_publisher = rospy.Publisher('/marker', Marker, queue_size=2)
+   #     self.marker_class = Marker()
         # variable to store markers tuples
         self.markers = 0
 
@@ -251,8 +265,14 @@ class floodFill():
         new_inp = (inp+10)*(384/20)
         return new_inp
 
+    def map_to_odom(self, inp):
+        #new_inp = [float(x) for x in inp]
+        #print(new_inp)
+        inp_ret = np.array(inp)*(20.0/384.0)-10.0
+        return inp_ret
+
     def flood_fill_do(self, pixel_loc_in, end_pixel_loc_in):
-        # Create an matrix to track whether a pixel has been hit
+        # Create a matrix to track whether a pixel has been hit
         closed_array = np.zeros((384, 384), dtype=int)
         pixel_loc2 = np.rint(self.odom_to_map(np.asarray(pixel_loc_in)))
         pixel_loc = [0]*2
@@ -309,6 +329,8 @@ class floodFill():
         x_vals = [row[0] for row in mark_loc]
         y_vals = [row[1] for row in mark_loc]
         plt.scatter(y_vals[0:], x_vals[0:], color='red', marker='.')
+
+
         ######## Make room for wall turns etc
         path_length = range(len(mark_loc))
         count = 0
@@ -344,20 +366,31 @@ class floodFill():
                     y_star.append(y + offset)
             return x_star, y_star
 
+        vals_out = []
         for i in path_length:
             count += 1
             pix_dist = count - prev_count
             if pix_dist >= pix_expand:
                 plt.scatter(y_vals[i], x_vals[i], color='black', marker='.')
+                vals_out.append(tuple(self.map_to_odom([y_vals[i], x_vals[i]])))
                 prev_count = count
                 self.x_star, self.y_star = check_for_obstical(y_vals[i], x_vals[i], width, offset, self.x_star, self.y_star)
         plt.scatter(self.y_star, self.x_star, color='blue', marker='.')
         plt.show()
+        return list(vals_out)
+
 
     def markers_to_rviz(self):
         """exports markers to rviz after clearing existing markers"""
         self.marker_class.action = Marker.DELETEALL
         draw_points(self.markers, self.marker_publisher)
+
+
+
+
+
+
+
 
 
 # def map_odom_xy(data):
@@ -372,12 +405,24 @@ class floodFill():
 
 # Run the class if main
 if __name__ == '__main__':
+    def map(x, in_min, in_max, out_min, out_max):
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
     #rospy.init_node('map_odom_output_x_y')
     #rospy.Subscriber('/map_odom', Pose, map_odom_xy)
     fill = floodFill()
     #print(tuple([-3, -3]))
     #print(np.asarray(tuple([-3, -3])))
-    prev_location_x = -3
-    prev_location_y = -1
 
-    fill.flood_fill_do(tuple([prev_location_x, prev_location_y]), tuple([-5.0, -2]))
+    next_points = graphDataStructure().find_next_point(fill)
+    x = next_points[0]
+    y = next_points[1]
+
+
+    new_x = map(x, 0, 384, -10, 10)
+    new_y = map(y, 0, 384, -10, 10)
+    #print(new_x,new_y)
+
+
+
+    val_out = fill.flood_fill_do(tuple([-3.4, -3.4]), tuple([new_y, new_x]))
+    print('out',val_out)
