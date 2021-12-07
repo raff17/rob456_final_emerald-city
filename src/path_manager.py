@@ -28,7 +28,7 @@ class PathManager:
         self.waypoint_list = 0
         self.waypoint_index = 0
         self.cur_waypoint = 0
-	self.fill = floodFill()	
+	    self.fill = floodFill()
 
 
     def waypoint_manager(self):
@@ -38,13 +38,14 @@ class PathManager:
             self.new_target_flag = 0
             self.waypoint_index = 0
             self.waypoint_list = self.call_a_star(self.cur_loc, self.TargetTuple)
-	    self.waypoint_list
 
         # code to check if sufficiently close to a waypoint to shift to new waypoint
         #elif self.waypoint_list(self.waypoint_index) - self.cur_loc <
-
-        self.cur_waypoint = self.waypoint_list[self.waypoint_index]
-	self.publish_waypoint()
+        # Idea: If different between wavepoint and robot less than # switch to a new wavepoint?
+        # waypoints(location) - current_location < #
+        elif (self.waypoint_list(self.waypoint_index) - self.cur_loc) < .2:  # I am not sure if it's doing what I think is doing
+            self.cur_waypoint = self.new_target_flag
+        #    self.cur_waypoint = self.waypoint_list(self.waypoint_index)
 
     def current_target_interpret(self, target_msg):
         """reads the current target public message and if it is different
@@ -64,10 +65,8 @@ class PathManager:
         return self.fill.flood_fill_do(start, end)
 
 
-
 if __name__ == '__main__':
     rospy.init_node('path_manager')
     PM = PathManager()
     PM.waypoint_manager()
     rospy.spin()
-
