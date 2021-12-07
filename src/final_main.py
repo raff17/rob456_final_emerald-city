@@ -20,8 +20,6 @@ class MainRun:
 
     def main_run_func(self,time_limit,beg_time,current_time):
 	print(self.next_point)
-	self.robot_loc_x =  self.cur_loc
-        self.robot_loc_y = 75  #odometry
         current_time = rospy.get_rostime()
         limit = 10
         x = self.next_point[0]
