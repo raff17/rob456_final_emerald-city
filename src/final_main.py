@@ -1,26 +1,31 @@
 #!/usr/bin/env python
 
-import final_a_star as a
 import rospy
+from final_a_star import floodFill, graphDataStructure
+from std_msgs.msg import Header, String
 from geometry_msgs.msg import Pose
+import tf2_geometry_msgs
+import tf2_ros
+
 
 class MainRun:
     def __init__(self):
-
-        self.fill = a.floodFill()
-	self.data_struc = a.graphDataStructure()
-        #self.next_point = tuple(a.graphDataStructure().find_next_point(self.fill))
+        self.fill = floodFill()
+	self.data_struc = graphDataStructure()
+        #self.next_point = tuple(graphDataStructure().find_next_point(self.fill))
 	self.next_point = self.data_struc.find_next_point(self.fill)
         self.robot_loc_x = 0
         self.robot_loc_y = 0
         self.did_send = False #flag_from_ros
 	self.target_pub = rospy.Publisher('/Current_Target', String, queue_size=10)
+	print('passed current target line')
         self.pos_sub = rospy.Subscriber('/map_odom', Pose, self.current_pos_interpret)
 
 
-    def main_run_func(self,time_limit,beg_time,current_time):
+    def main_run_func(self,time_limit, beg_time):
 	print(self.next_point)
         current_time = rospy.get_rostime()
+	
         limit = 10
         x = self.next_point[0]
         y = self.next_point[1]
@@ -33,7 +38,8 @@ class MainRun:
 
 
         time_taken = current_time - beg_time
-        #print(time_taken)
+        print('time: ',time_taken)
+	print('what')
         if time_taken > time_limit:
 
             if diff_x > limit and diff_y > limit:
@@ -56,15 +62,18 @@ class MainRun:
 	self.robot_loc_x = pos_msg.position.y
 	print(tuple(self.robot_loc_x, self.robot_loc_y))
 
-
+print('hi')
 if __name__ == '__main__':
-    time_limit = 2 # Time allowed for robot to reach destination in ms?
-    beg_time = 0
-    current_time = 0
+    print('whattt')
+    time_limit = rospy.Duration(2) # Time allowed for robot to reach destination in ms?
+    beg_time = rospy.Duration(0)
+    #current_time = 0
+ 
     rospy.init_node('final_main')
-    rospy.spin()
+
     #rate = rospy.Rate(1)
     #rate.sleep()
-    Planning = MainRun()
-    Planning.main_run_func()
+    pllanning = MainRun()
+    pllanning.main_run_func(time_limit, beg_time)
+    rospy.spin()
     #print(newpoint.is_bot_at_endpoint(time_limit,beg_time,current_time))
