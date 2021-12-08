@@ -62,7 +62,7 @@ class graphDataStructure:
     def __init__(self):
         # Read Images
         # This imports the image
-        self.img = mpimg.imread('devMap.pgm')
+        self.img = mpimg.imread('/home/cole/catkin_ws/src/rob456_final_emerald-city/src/devMap.pgm')
         self.neighbor_pixels = []
         self.border_x = []
         self.border_y = []
@@ -382,8 +382,9 @@ class floodFill():
 
     def markers_to_rviz(self):
         """exports markers to rviz after clearing existing markers"""
-        self.marker_class.action = Marker.DELETEALL
+        #self.marker_class.action = Marker.DELETEALL
         draw_points(self.markers, self.marker_publisher)
+	print("Markers drawn")
 
 
 # def map_odom_xy(data):
