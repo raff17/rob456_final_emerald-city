@@ -62,7 +62,7 @@ class graphDataStructure:
     def __init__(self):
         # Read Images
         # This imports the image
-        self.img = mpimg.imread('/home/cole/catkin_ws/src/rob456_final_emerald-city/src/devMap.pgm')
+        self.img = mpimg.imread('/home/kyle/catkin_ws/src/rob456_final_emerald-city/src/devMap.pgm')
         self.neighbor_pixels = []
         self.border_x = []
         self.border_y = []
@@ -376,8 +376,9 @@ class floodFill():
         #plt.show()
 	self.markers = vals_out
 	self.markers_to_rviz()
-
-        return list(vals_out)
+	list_m = list(vals_out)
+	list_m.reverse()
+        return list_m
 
 
     def markers_to_rviz(self):
