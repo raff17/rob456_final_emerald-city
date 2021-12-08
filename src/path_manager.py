@@ -51,8 +51,10 @@ class PathManager:
             if self.new_target_flag == 1:
                 self.new_target_flag = 0
                 self.waypoint_index = 0
+		astar_start = tuple([self.cur_loc[1],self.cur_loc[1]])
+		astar_end = tuple([self.TargetTuple[1], self.TargetTuple[0]])
 		print("running A*")
-                self.waypoint_list = self.call_a_star(self.cur_loc, self.TargetTuple)
+                self.waypoint_list = self.call_a_star(astar_start, astar_end)
 
             # code to check if sufficiently close to a waypoint to shift to new waypoint
             #elif self.waypoint_list(self.waypoint_index) - self.cur_loc <
@@ -63,7 +65,7 @@ class PathManager:
 	    #print(self.cur_waypoint)
 	    self.publish_waypoint()
 
-	    print("waypoing_man looped")
+	    #print("waypoing_man looped")
 	    r.sleep()
 	rospy.spin()
 
