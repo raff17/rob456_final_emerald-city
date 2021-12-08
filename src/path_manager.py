@@ -55,6 +55,19 @@ class PathManager:
 		astar_end = tuple([self.TargetTuple[1], self.TargetTuple[0]])
 		print("running A*")
                 self.waypoint_list = self.call_a_star(astar_start, astar_end)
+		
+	    # Calculate distance to waypoint. If small, shift to next waypoint
+	    # NEED TO CHECK X Y ORDER IS CORRECT
+	    x_dist = self.waypoint_list[self.waypoint_index][0]-self.cur_loc[0]
+	    y_dist = self.waypoint_list[self.waypoint_index][1]-self.cur_loc[1]
+	    print('length ',len(self.waypoint_list))
+	    if np.sqrt(x_dist**2+y_dist**2)<.5:
+		if (self.waypoint_index+1) < len(self.waypoint_list):
+		    self.waypoint_index += 1
+		    print(self.waypoint_index)
+		else:
+		    print('Reached last waypoint!')
+		    # do additional actions here...
 
             # code to check if sufficiently close to a waypoint to shift to new waypoint
             #elif self.waypoint_list(self.waypoint_index) - self.cur_loc <
