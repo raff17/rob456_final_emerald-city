@@ -2,6 +2,7 @@
 
 import rospy
 import numpy as np
+from geometry_msgs.msg import Pose
 
 # Sensor message types
 from sensor_msgs.msg import LaserScan
@@ -43,7 +44,7 @@ def lidar_callback(scan_msg):
     distances = scan_msg.ranges
     numScans = len(distances)
 
-    print(ODOM)
+    #print(ODOM)
 
     # Problem 1: move the robot toward the goal
     # create vector between goal and cur. pos.
@@ -172,7 +173,8 @@ def target_callback(target_msg):  # Check if correct plz ;-;
     :return: None
     """
     global GOAL
-    GOAL = tuple(target_msg)
+    GOAL = tuple([target_msg.position.x, target_msg.position.y])
+    print(GOAL)
 
 
 if __name__ == "__main__":
@@ -182,7 +184,7 @@ if __name__ == "__main__":
     # subscribe to sensor messages
     lidar_sub = rospy.Subscriber('/scan', LaserScan, lidar_callback)
     odom_sub = rospy.Subscriber('/odom', Odometry, odom_callback)
-    waypoint_sub = rospy.Subscriber('/Current_Waypoint', String, target_callback)
+    waypoint_sub = rospy.Subscriber('/Current_Waypoint', Pose, target_callback)
     # publish twist message
     pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 

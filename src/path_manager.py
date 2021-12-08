@@ -85,9 +85,9 @@ class PathManager:
 	#print("pos interpreted!")
 
     def publish_waypoint(self):
-        print("waypoint published!")
+        #print("waypoint published!")
         self.waypoint_pub.publish(self.waypoint_pose)
-	print(self.waypoint_pose)
+	#print(self.waypoint_pose)
 
     def call_a_star(self, start, end):
         return self.fill.flood_fill_do(start, end)
@@ -95,7 +95,7 @@ class PathManager:
 
 
 if __name__ == '__main__':
-    rospy.init_node('path_manager')
+    rospy.init_node('path_manager', log_level=rospy.DEBUG)
     PM = PathManager()
     PM.waypoint_manager()
     #rospy.spin()
