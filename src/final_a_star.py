@@ -378,6 +378,7 @@ class floodFill():
 	self.markers_to_rviz()
 	list_m = list(vals_out)
 	list_m.reverse()
+	print(list_m)
         return list_m
 
 
