@@ -53,7 +53,7 @@ def lidar_callback(scan_msg):
     rot_goal_angle = np.arctan2(vect[1], vect[0])
 
     # rotate robot
-    rot_vel = 0.35
+    rot_vel = 0.1
     lin_vel = 0.16
     angular_var = 0
 
@@ -71,13 +71,19 @@ def lidar_callback(scan_msg):
     if abs(vect[0] - ODOM[0]) or abs(vect[1] - ODOM[1]) > 0.5:
         command.linear.x = lin_vel
 
+    if abs(rot_goal_angle - ODOM[2]) > 0.1:
+	command.linear.x = 0
+    command.angular.z = angular_var
+    pub.publish(command)
+
     # YOUR CODE HERE
     # End problem 1
-
-    RstopTrigger = 0
-    RnumTriggerscans = 0
-    LstopTrigger = 0
-    LnumTriggerscans = 0
+#
+#    RstopTrigger = 0
+#    RnumTriggerscans = 0
+#    LstopTrigger = 0
+#    LnumTriggerscans = 0
+"""
     backupTrigger = 0
     dist_trig = 0.6
     left_ang_bound = 2 * np.pi
@@ -145,9 +151,8 @@ def lidar_callback(scan_msg):
 
         # After this loop is done, we increment the currentLaserTheta
         currentLaserTheta = currentLaserTheta + angleIncrement
+"""
 
-    command.angular.z = angular_var
-    pub.publish(command)
 
 
 def odom_callback(msg):

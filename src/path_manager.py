@@ -12,6 +12,7 @@ from std_msgs.msg import Header, String
 import tf2_ros
 from final_a_star import floodFill
 from nav_msgs.msg import Odometry
+import numpy as np
 
 
 class PathManager:
@@ -61,7 +62,7 @@ class PathManager:
 	    x_dist = self.waypoint_list[self.waypoint_index][0]-self.cur_loc[0]
 	    y_dist = self.waypoint_list[self.waypoint_index][1]-self.cur_loc[1]
 	    print('length ',len(self.waypoint_list))
-	    if np.sqrt(x_dist**2+y_dist**2)<.5:
+	    if np.sqrt(x_dist**2+y_dist**2)<.2:
 		if (self.waypoint_index+1) < len(self.waypoint_list):
 		    self.waypoint_index += 1
 		    print(self.waypoint_index)
@@ -92,6 +93,8 @@ class PathManager:
             self.new_target_flag = 1
 	    print("newtarget recieved")
             self.TargetTuple = tuple([target_msg.position.x, target_msg.position.y])
+	#print('Self target in func', self.TargetTuple)
+	#print('other', self.target_sub.position.x, self.target_sub.position.y)
 
     def current_pos_interpret(self, pos_msg):
         self.cur_loc = tuple([pos_msg.position.x, pos_msg.position.y])
