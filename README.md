@@ -3,7 +3,7 @@ ROB456 Final Project
 
 To use this directory:
 
-git clone https://github.com/rawiec/rob456_final_emerald-city in your ros terminal
+git clone https://github.com/raff17/rob456_final_emerald-city in your ros terminal
 
 copy it to catkin_ws/src
 
